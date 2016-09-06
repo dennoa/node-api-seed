@@ -1,0 +1,47 @@
+{
+  "name": "node-api-seed",
+  "version": "1.0.0",
+  "description": "Template for a node API",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "nodemon server",
+    "test": "mocha server/**/*.spec.js --recursive --check-leaks --reporter min",
+    "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- server/**/*.spec.js",
+    "dist": "rm -rf dist && mkdir dist && cp -r server dist && cp package.json dist && ls -l dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://dennoa@github.com/dennoa/node-api-seed.git"
+  },
+  "keywords": [
+    "node",
+    "api"
+  ],
+  "author": "dennoa",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dennoa/node-api-seed/issues"
+  },
+  "homepage": "https://github.com/dennoa/node-api-seed#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "compression": "^1.6.2",
+    "config-obfuscator": "^1.0.1",
+    "cors": "^2.8.0",
+    "express": "^4.14.0",
+    "express-validator": "^2.20.8",
+    "lodash": "^4.15.0",
+    "mongoose": "^4.6.0",
+    "stateless-auth": "^1.0.4",
+    "uuid": "^2.0.2",
+    "winston": "^2.2.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.0.2",
+    "nodemon": "^1.10.2",
+    "sinon": "^1.17.5",
+    "supertest": "^2.0.0"
+  }
+}
