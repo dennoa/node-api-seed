@@ -23,12 +23,12 @@ function isValidPositiveIntegerRange(range) {
   return !!range && util.isPositiveInteger(range.min) && util.isPositiveInteger(range.max) && parseInt(range.min) <= parseInt(range.max);
 }
 
-function middleware() {
-  return expressValidator({
+function middleware(options) {
+  return expressValidator(_.merge({
     customValidators: {
       isValidPositiveIntegerRange: isValidPositiveIntegerRange
     }
-  });
+  }, options));
 }
 
 function validate(req, validationRules) {

@@ -1,6 +1,7 @@
 'use strict';
 
 const config = require('../../config/environment');
+const user = require('../../components/user');
 
 module.exports = require('stateless-auth')({
   jwt: { 
@@ -12,9 +13,7 @@ module.exports = require('stateless-auth')({
     },
     login: {
       findUser: (credentials, callback) => {
-        //TODO: Lookup user info and callback
-        //e.g. UserModel.findOne({ username: credentials.username }, callback);
-        callback(null, null);
+        user.findByUsername(credentials.username, callback);
       }
     }
   }

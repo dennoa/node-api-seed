@@ -4,11 +4,12 @@ const router = require('express').Router();
 const validate = require('./validate');
 const save = require('./save');
 
-router.post('/', validate.forAdmin, save('create'));
-router.put('/', validate.forAdmin, save('update'));
-router.post('/search', validate.forAdmin, require('./search'));
-router.get('/:key', validate.forAdmin, require('./get'));
-router.delete('/:key', validate.forAdmin, require('./remove'));
+router.use(validate.forAdmin);
+router.post('/', save('create'));
+router.put('/', save('update'));
+router.post('/search', require('./search'));
+router.get('/:key', require('./get'));
+router.delete('/:key', require('./remove'));
 
 module.exports = {
   routes: router,

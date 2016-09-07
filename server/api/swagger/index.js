@@ -7,7 +7,7 @@ const swagger = _.merge({
   "swagger": "2.0",
   "info": {
     "title": "Node API Seed",
-    "description": "Template for Node API projects.",
+    "description": "Template for Node API projects.\n\nSwagger docs for the authentication operations are available under /auth/swagger.",
     "version": "1.0"
   },
   "basePath": "/",
