@@ -18,7 +18,7 @@ const swagger = _.merge({
 },
   require('./security'),
   require('./error-definitions'),
-  require('./number-range'),
+  require('./integer-range'),
   require('../api-key/swagger')
 );
 

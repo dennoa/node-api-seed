@@ -9,7 +9,7 @@ function getOptionalValue(value, defaultValue) {
 }
 
 function isPositiveInteger(num) {
-  return isSpecified(num) && !!(''+ num).match(/^([0-9]*)$/);
+  return isSpecified(num) && !!(''+ num).match(/^([0-9]+)$/);
 }
 
 module.exports = {

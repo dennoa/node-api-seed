@@ -1,13 +1,9 @@
 'use strict';
 
-const routes = require('./index').routes;
-const apiKey = require('../../components/api-key');
 const expect = require('chai').expect;
 const sinon = require('sinon');
-const express = require('express');
-const bodyParser = require('body-parser');
-const supertest = require('supertest');
-const requestValidator = require('../../components/request-validator');
+const apiKey = require('../../components/api-key');
+const specHelper = require('../spec-helper');
 
 describe('api-key save operations', ()=> {
 
@@ -25,21 +21,53 @@ describe('api-key save operations', ()=> {
     apiKey.validate.restore();
   });
 
-  function request(getOrPost) {
-    let app = express();
-    app.use(bodyParser.json());
-    app.use(requestValidator.middleware());
-    app.use('/api-key', routes);
-    return supertest(app)[getOrPost]('/api-key')
-      .set('Accept', 'application/json');
-  }
-
   it('should create an api key', (done) => {
     let doc = { key: '234', dateFrom: '2016-09-06T07:25:10.759Z' };
     apiKey.create.returns(new Promise(resolve => resolve(doc)));
-    request('post').send(doc).end((err, res) => {
+    specHelper.request('post', '/api-key').send(doc).end((err, res) => {
+      expect(apiKey.create.calledWith(doc)).to.equal(true);
       expect(res.statusCode).to.equal(200);
       expect(res.body).to.deep.equal(doc);
+      done();
+    });
+  });
+
+  it('should return any unexpected error encountered when creating an api key', (done) => {
+    let doc = { key: '234', dateFrom: '2016-09-06T07:25:10.759Z' };
+    apiKey.create.returns(new Promise((resolve, reject) => reject(expectedError)));
+    specHelper.request('post', '/api-key').send(doc).end((err, res) => {
+      expect(res.statusCode).to.equal(500);
+      expect(res.body.error).to.equal(expectedError);
+      done();
+    });
+  });
+
+  it('should update an api key', (done) => {
+    let doc = { key: '234', dateTo: '2016-10-06T07:25:10.759Z' };
+    apiKey.update.returns(new Promise(resolve => resolve(doc)));
+    specHelper.request('put', '/api-key').send(doc).end((err, res) => {
+      expect(apiKey.update.calledWith(doc)).to.equal(true);
+      expect(res.statusCode).to.equal(200);
+      expect(res.body).to.deep.equal(doc);
+      done();
+    });
+  });
+
+  it('should not update an api key when no key has been provided', (done) => {
+    let doc = { dateTo: '2016-10-06T07:25:10.759Z' };
+    specHelper.request('put', '/api-key').send(doc).end((err, res) => {
+      expect(res.statusCode).to.equal(400);
+      expect(res.body[0].param).to.equal('key');
+      done();
+    });
+  });
+
+  it('should return any unexpected error encountered when updating an api key', (done) => {
+    let doc = { key: '234', dateTo: '2016-10-06T07:25:10.759Z' };
+    apiKey.update.returns(new Promise((resolve, reject) => reject(expectedError)));
+    specHelper.request('put', '/api-key').send(doc).end((err, res) => {
+      expect(res.statusCode).to.equal(500);
+      expect(res.body.error).to.equal(expectedError);
       done();
     });
   });

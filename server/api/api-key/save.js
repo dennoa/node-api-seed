@@ -6,14 +6,15 @@ const requestValidator = require('../../components/request-validator');
 
 module.exports = createOrUpdate => {
 
-  const dateFromSchemaOptions = (createOrUpdate === 'create') ? { optional: false } : {}; 
-
   const validationRules = {
-    key: requestValidator.schema.isLength({ optional: false, options: [{ min: 1 }] }),
-    dateFrom: requestValidator.schema.isDate(dateFromSchemaOptions),
+    dateFrom: requestValidator.schema.isDate(),
     dateTo: requestValidator.schema.isDate(),
     isAdmin: requestValidator.schema.isBoolean()
   };
+
+  if (createOrUpdate === 'update') {
+    validationRules.key = requestValidator.schema.isLength({ optional: false, options: [{ min: 1 }] });
+  }
 
   function save(req) {
     return new Promise((resolve, reject)=> {

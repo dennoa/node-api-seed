@@ -2,7 +2,7 @@
 
 module.exports = {
   "definitions": {
-    "number-range": {
+    "integer-range": {
       "type": 'object',
       "required": ["min","max"],
       "properties": {

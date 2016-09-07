@@ -15,10 +15,6 @@ const transformers = {
     key: (key => key),
     value: (key, value) => { return { $lte: value }; }
   },
-  lte_or_missing: {
-    key: (key => '$or'),
-    value: (key, value) => { return [_.set({}, key, { $lte: value }), _.set({}, key, { $exists: false })]; }
-  },
   like: {
     key: (key => key),
     value: (key, value) => { return new RegExp(value, 'i'); }

@@ -46,6 +46,15 @@ describe('respond', ()=> {
     });
   });
 
+  it('should respond with 404 where no error was supplied', (done)=> {
+    respond(res, new Promise((resolve, reject)=> {
+      reject();
+    })).then(()=> {
+      expect(resStatus.calledWith(404)).to.be.true;
+      done();
+    });
+  });
+
   it('should respond with 500 where some other kind of errors were supplied', (done)=> {
     let errors = 'crap';
     respond(res, new Promise((resolve, reject)=> {

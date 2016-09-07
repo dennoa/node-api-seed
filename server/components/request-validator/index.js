@@ -19,21 +19,21 @@ const schema = {
   isLength: errorInvalid('isLength')
 };
 
-function isValidRange(range) {
+function isValidPositiveIntegerRange(range) {
   return !!range && util.isPositiveInteger(range.min) && util.isPositiveInteger(range.max) && parseInt(range.min) <= parseInt(range.max);
 }
 
 function middleware() {
   return expressValidator({
     customValidators: {
-      isValidRange: isValidRange
+      isValidPositiveIntegerRange: isValidPositiveIntegerRange
     }
   });
 }
 
 function validate(req, validationRules) {
   return new Promise((resolve, reject)=> {
-    req.check(validationRules);
+    req.checkBody(validationRules); //Only supports checkBody as check does not seem to function as expected
     let errors = req.validationErrors();
     if (errors) { return reject(errors); }
     resolve();

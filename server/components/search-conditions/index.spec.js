@@ -5,8 +5,18 @@ const expect = require('chai').expect;
 
 describe('search-conditions', ()=> {
 
-  let params = { field1: 'upper', field2: 'like', field3: 'range', field4: 'range' };
+  let params = { field1: 'upper', field2: 'like', field3: 'range', field4: 'range', field5: 'exact', field6: 'lte', field7: 'gte' };
   let searchConditionsInstance = searchConditions(params);
+
+  it('should omit from the search conditions any properties that are not part of the specified search parameters', ()=> {
+    let conditions = searchConditionsInstance.get({ notSpecified: 'bob' });
+    expect(typeof conditions.notSpecified === 'undefined').to.equal(true);
+  });
+
+  it('should create exact match search conditions', ()=> {
+    let conditions = searchConditionsInstance.get({ field5: 'bob' });
+    expect(conditions.field5).to.equal('bob');
+  });
 
   it('should create uppercase search conditions', ()=> {
     let conditions = searchConditionsInstance.get({ field1: 'bob' });
@@ -16,6 +26,16 @@ describe('search-conditions', ()=> {
   it('should create like search conditions', ()=> {
     let conditions = searchConditionsInstance.get({ field2: 'harry' });
     expect(conditions.field2).to.be.defined;
+  });
+
+  it('should create lte search conditions', ()=> {
+    let conditions = searchConditionsInstance.get({ field6: 10 });
+    expect(conditions.field6['$lte']).to.equal(10);
+  });
+
+  it('should create gte search conditions', ()=> {
+    let conditions = searchConditionsInstance.get({ field7: 'something' });
+    expect(conditions.field7['$gte']).to.equal('something');
   });
 
   it('should create range search conditions', ()=> {

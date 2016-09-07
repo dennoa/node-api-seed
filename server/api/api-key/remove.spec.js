@@ -1,43 +1,37 @@
 'use strict';
 
-const remove = require('./remove');
-const apiKey = require('../../components/api-key');
 const expect = require('chai').expect;
 const sinon = require('sinon');
+const apiKey = require('../../components/api-key');
+const specHelper = require('../spec-helper');
 
-describe('api-key remove api', ()=> {
+describe('api-key remove operation', ()=> {
 
-  let req, res, resStatus, resSend, resJson;
   let expectedError = 'Expected for testing';
 
   beforeEach(()=> {
-    req = { params: {} };
-    resSend = sinon.stub();
-    resJson = sinon.stub();
-    resStatus = sinon.stub().returns({ send: resSend, json: resJson });
-    res = { status: resStatus };
     sinon.stub(apiKey, 'remove');
+    sinon.stub(apiKey, 'validate').returns(new Promise(resolve => resolve({ isAdmin: true })));
   });
 
   afterEach(()=> {
     apiKey.remove.restore();
+    apiKey.validate.restore();
   });
 
-  it('should remove an api key', (done)=> {
-    req.params = { key: 'my key' };
-    apiKey.remove.returns(new Promise((resolve)=> { resolve(); }));
-    remove(req, res).then(()=> {
-      expect(resStatus.calledWith(204)).to.be.true;
+  it('should remove an api key', (done) => {
+    apiKey.remove.returns(new Promise(resolve => resolve()));
+    specHelper.request('delete', '/api-key/2348akkdf9').send().end((err, res) => {
+      expect(res.statusCode).to.equal(204);
       done();
     });
   });
 
   it('should respond with any errors encountered when removing an api key', (done)=> {
-    req.params = { key: 'my key' };
     apiKey.remove.returns(new Promise((resolve, reject)=> { reject(expectedError); }));
-    remove(req, res).then(()=> {
-      expect(resStatus.calledWith(500)).to.be.true;
-      expect(resJson.firstCall.args[0].error).to.equal(expectedError);
+    specHelper.request('delete', '/api-key/2348akkdf9').send().end((err, res) => {
+      expect(res.statusCode).to.equal(500);
+      expect(res.body.error).to.equal(expectedError);
       done();
     });
   });
