@@ -1,17 +1,17 @@
 'use strict';
 
 const _ = require('lodash');
-const apiKey = require('../../../components/api-key');
+const accessControl = require('../../access-control');
 
 const swagger = _.merge(
   require('./api-key-paths'), 
   require('./api-key-definitions')
 );
 
-module.exports = req => {
+module.exports = res => {
   return new Promise(resolve => {
-    apiKey.validate(req)
-      .then(apiDoc => resolve(apiDoc.isAdmin ? swagger : null))
+    accessControl.validate(res, { isAdmin: true })
+      .then(() => resolve(swagger))
       .catch(() => resolve(null));
   });
 }

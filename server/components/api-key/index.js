@@ -24,7 +24,7 @@ function validate(req) {
   return new Promise((resolve, reject)=> {
     let key = req.get(requestHeaderKey);
     if (!key) { return reject(); }
-    findValid(key).then((doc)=> {
+    findValid(key).then(doc => {
       return (doc) ? resolve(doc) : reject();
     }, reject);
   });

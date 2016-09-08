@@ -3,7 +3,7 @@
 const sinon = require('sinon');
 const expect = require('chai').expect;
 const swagger = require('./index');
-const apiKey = require('../../../components/api-key');
+const accessControl = require('../../access-control');
 
 describe('api-key swagger docs', () => {
 
@@ -11,31 +11,22 @@ describe('api-key swagger docs', () => {
 
   beforeEach(() => {
     req = {};
-    sinon.stub(apiKey, 'validate').returns(new Promise(resolve => resolve({ isAdmin: false })));
+    sinon.stub(accessControl, 'validate').returns(new Promise(resolve => resolve()));
   });
 
   afterEach(() => {
-    apiKey.validate.restore();
+    accessControl.validate.restore();
   });
 
   it('should not return any api docs when no valid api key has been provided', done => {
-    apiKey.validate.returns(new Promise((resolve, reject) => reject()));
+    accessControl.validate.returns(new Promise((resolve, reject) => reject()));
     swagger(req).then(docs => {
       expect(docs).to.equal(null);
       done();
     });
   });
 
-  it('should not return any api docs when the provided api key is not for an administrator', done => {
-    apiKey.validate.returns(new Promise(resolve => resolve({ isAdmin: false })));
-    swagger(req).then(docs => {
-      expect(docs).to.equal(null);
-      done();
-    });
-  });
-
-  it('should return the api docs when the provided api key is for an administrator', () => {
-    apiKey.validate.returns(new Promise(resolve => resolve({ isAdmin: true })));
+  it('should return the api docs when the provided api key has access', () => {
     swagger(req).then(docs => {
       expect(docs.tags[0].name).to.equal('api-key-admin');
       done();

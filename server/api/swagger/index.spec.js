@@ -39,17 +39,13 @@ describe('swagger docs', ()=> {
   });
 
   it('should merge other generated api docs with the core swagger docs', done => {
-    let myKey = 'my-api-key';
-    let passedKey;
     let tags = [{ name: 'my-awesome-api-operations', description: 'My awesome stuff' }, { name: 'my-average-bits', description: 'Ok I guess' }];
-    let docFn = req => {
-      passedKey = req.get(apiKey.requestHeaderKey);
+    let docFn = res => {
       return { tags: tags };
     };
     swagger.apiDocs.push(docFn);
-    specHelper.request('get', '/swagger').set(apiKey.requestHeaderKey, myKey).send().end((err, res) => {
+    specHelper.request('get', '/swagger').send().end((err, res) => {
       verifyCore(res);
-      expect(passedKey).to.equal(myKey);
       expect(res.body.tags).to.deep.equal(tags);
       done();
     });

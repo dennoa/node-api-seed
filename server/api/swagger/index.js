@@ -23,10 +23,10 @@ const swagger = _.mergeWith({
   ]
 }, require('./security'), require('./error-definitions'), require('./integer-range'), util.concatArrays);
 
-function merge(req) {
+function merge(res) {
   return new Promise((resolve, reject) => {
     let merged = Object.assign({}, swagger);
-    let other = apiDocs.map(doc => ((typeof doc === 'function') ? doc(req) : doc));
+    let other = apiDocs.map(doc => ((typeof doc === 'function') ? doc(res) : doc));
     let promises = [];
     other.forEach(doc => (doc instanceof Promise) ? promises.push(doc) : _.mergeWith(merged, doc, util.concatArrays));
     Promise.all(promises)
@@ -36,7 +36,7 @@ function merge(req) {
 }
 
 function routes(req, res) {
-  respond(res, merge(req));
+  respond(res, merge(res));
 }
 
 module.exports = {
