@@ -4,6 +4,7 @@ const uuid = require('uuid');
 const _ = require('lodash');
 const ApiKey = require('./api-key.model');
 const logger = require('../logger');
+const requestHeaderKey = 'x-iag-api-key'; 
 
 function findValid(key) {
   let now = new Date();
@@ -21,7 +22,7 @@ function findValid(key) {
 
 function validate(req) {
   return new Promise((resolve, reject)=> {
-    let key = req.get('x-iag-api-key');
+    let key = req.get(requestHeaderKey);
     if (!key) { return reject(); }
     findValid(key).then((doc)=> {
       return (doc) ? resolve(doc) : reject();
@@ -85,5 +86,6 @@ module.exports = {
   get: get,
   remove: remove,
   find: find,
+  requestHeaderKey: requestHeaderKey,
   ensureAnAdminApiKeyIsAvailable: ensureAnAdminApiKeyIsAvailable
 };

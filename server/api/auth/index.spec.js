@@ -16,6 +16,23 @@ describe('authentication support', ()=> {
     user.findByUsername.restore();
   });
 
+  function verifyUserInfo(sanitized, raw) {
+    expect(sanitized.ids.login).to.equal(raw.username);
+    expect(sanitized.email).to.equal(raw.email);
+  }
+
+  it('should authenticate with the local login function', done => {
+    let credentials = { username: 'barry', password: 'secret' };
+    let userInfo = { username: credentials.username, passwordHash: auth.options.providers.login.hashPassword(credentials.password), email: 'barry@hoime.com' };
+    user.findByUsername.yields(null, userInfo);
+    specHelper.request('post', '/auth/login').send(credentials).end((err, res) => {
+      expect(res.statusCode).to.equal(200);
+      verifyUserInfo(res.body.user_info, userInfo);
+      verifyUserInfo(auth.jwt.decode(res.body.token), userInfo);
+      done();
+    });
+  });
+
   it('should return unauthorized when the password does not match', done => {
     let credentials = { username: 'barry', password: 'secret' };
     let userInfo = { username: credentials.username, passwordHash: 'incorrect', email: 'barry@hoime.com' };
@@ -25,5 +42,6 @@ describe('authentication support', ()=> {
       done();
     });
   });
+  
 
 });

@@ -169,6 +169,10 @@ describe('api-key', ()=> {
     });
   });
 
+  it('should expose the request header used for the api key', () => {
+    expect(apiKey.requestHeaderKey).to.equal('x-iag-api-key');
+  });
+
   it('should ensure an admin api key is available', (done)=> {
     apiKey.ensureAnAdminApiKeyIsAvailable().then(()=> {
       expect(model.findOne.firstCall.args[0].isAdmin).to.equal(true);

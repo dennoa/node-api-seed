@@ -41,4 +41,22 @@ describe('util', ()=> {
     });
   });
 
+  it('should concat when both target and source are arrays', () => {
+    let target = [{item: 1}];
+    let source = [{item: 2}, {item: 3}];
+    expect(util.concatArrays(target, source)).to.deep.equal(target.concat(source));
+  });
+
+  it('should not concat when the target is not an array', () => {
+    let target = {};
+    let source = [{item: 2}, {item: 3}];
+    expect(typeof util.concatArrays(target, source)).to.equal('undefined');
+  });
+
+  it('should not concat when the source is not an array', () => {
+    let target = [{item: 1}];
+    let source = 'something';
+    expect(typeof util.concatArrays(target, source)).to.equal('undefined');
+  });
+
 });

@@ -25,4 +25,16 @@ describe('user', () => {
       done();
     });
   });
+
+  it('should find a user by other id', done => {
+    let facebookId = 'user1';
+    let expected = { ids: { facebook: facebookId }, name: 'billy' };
+    model.findOne.yields(null, expected);
+    user.findByUserId('facebook', facebookId, (err, actual) => {
+      expect(model.findOne.calledWith({ 'ids.facebook': facebookId })).to.equal(true);
+      expect(actual).to.deep.equal(expected);
+      done();
+    });
+  });
+
 });

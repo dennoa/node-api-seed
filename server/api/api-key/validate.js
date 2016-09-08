@@ -7,7 +7,7 @@ function notAuthorized(res) {
 }
 
 function validate(req, res, next, requiresAdmin) {
-  return apiKey.validate(req).then((apiDoc)=> {
+  return apiKey.validate(req).then(apiDoc => {
     return (requiresAdmin && !apiDoc.isAdmin) ? notAuthorized(res) : next();
   }).catch(()=> {
     notAuthorized(res);
