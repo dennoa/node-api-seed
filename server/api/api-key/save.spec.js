@@ -34,6 +34,15 @@ describe('api-key save operations', ()=> {
     });
   });
 
+  it('should not create an empty api key', (done) => {
+    let doc = { key: '' };
+    specHelper.request('post', '/api-key').send(doc).end((err, res) => {
+      expect(res.statusCode).to.equal(400);
+      expect(res.body[0].param).to.equal('key');
+      done();
+    });
+  });
+
   it('should return any unexpected error encountered when creating an api key', (done) => {
     let doc = { key: '234', dateFrom: '2016-09-06T07:25:10.759Z' };
     apiKey.create.returns(new Promise((resolve, reject) => reject(expectedError)));

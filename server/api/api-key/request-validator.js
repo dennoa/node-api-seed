@@ -13,6 +13,7 @@ function prepare(options) {
   return commonRequestValidator.prepare({
     customValidators: {
       isApiKeyAvailable: key => new Promise((resolve, reject) => {
+        if (!key) { return reject(); }
         apiKey.get(key).then(reject, resolve);
       })
     }

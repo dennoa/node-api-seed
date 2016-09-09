@@ -54,7 +54,7 @@ describe('request validator', ()=> {
         key: validator.schema.requiredString,
         dateFrom: validator.schema.requiredDate,
         isAdmin: validator.schema.requiredBoolean,
-        countRange: validator.schema.requiredIntegerRange
+        countRange: validator.schema.requiredIntegerRange(0, 10)
       };
       validator.validate(req, validationRules).then(() => {
         expect(req.checkBody.calledWith(validationRules)).to.equal(true);
@@ -70,7 +70,7 @@ describe('request validator', ()=> {
         key: validator.schema.requiredString,
         dateFrom: validator.schema.optionalDate,
         isAdmin: validator.schema.optionalBoolean,
-        countRange: validator.schema.optionalIntegerRange
+        countRange: validator.schema.optionalIntegerRange(5,15)
       };
       validator.validate(req, validationRules).catch(reason => {
         expect(reason).to.equal(errors);

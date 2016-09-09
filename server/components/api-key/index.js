@@ -35,7 +35,7 @@ function validate(options) {
 
   return (req, res, next) => {
     let key = req.get(requestHeaderKey);
-    if (typeof key === 'undefined' || key === null) { return notAuthorized(res); }
+    if (!key) { return notAuthorized(res); }
     findValid(key).then(doc => {
       if (doc && matchesOptions(doc)) { return next(); }
       return notAuthorized(res);
