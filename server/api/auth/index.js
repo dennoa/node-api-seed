@@ -12,9 +12,7 @@ module.exports = require('stateless-auth')({
       clientSecret: 'CLIENT_SECRET'
     },
     login: {
-      findUser: (credentials, callback) => {
-        user.findByUsername(credentials.username, callback);
-      }
+      findUser: (credentials => user.get(credentials.username))
     }
   }
 });
