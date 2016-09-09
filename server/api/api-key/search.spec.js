@@ -15,7 +15,7 @@ describe('api-key search operation', ()=> {
     limit = sinon.stub().returns({ exec: exec });
     skip = sinon.stub().returns({ limit: limit });
     sinon.stub(apiKey, 'find').returns({ skip: skip });
-    sinon.stub(apiKey, 'validate').returns(new Promise(resolve => resolve({ isAdmin: true })));
+    sinon.stub(apiKey, 'validate').returns((req, res, next) => next());
   });
 
   afterEach(()=> {

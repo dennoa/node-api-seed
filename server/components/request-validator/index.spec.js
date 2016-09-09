@@ -18,7 +18,7 @@ describe('request validator', ()=> {
     validRanges.forEach((range)=> {
       it('should allow a range of ' + rangeDesc(range), (done)=> {
         let req = { body: { rank_aad: range } };
-        validator.middleware()(req, null, ()=> {
+        validator.prepare()(req, null, ()=> {
           req.checkBody('rank_aad', 'invalid').isValidPositiveIntegerRange();
           expect(req.validationErrors()).to.equal(false);
           done();
@@ -29,7 +29,7 @@ describe('request validator', ()=> {
     invalidRanges.forEach((range)=> {
       it('should disallow a range of ' + rangeDesc(range), (done)=> {
         let req = { body: { rank_aad: range } };
-        validator.middleware()(req, null, ()=> {
+        validator.prepare()(req, null, ()=> {
           req.checkBody('rank_aad', 'invalid').isValidPositiveIntegerRange();
           let error = req.validationErrors()[0];
           expect(error.param).to.equal('rank_aad');
@@ -46,31 +46,31 @@ describe('request validator', ()=> {
     let req;
 
     beforeEach(() => {
-      req = { checkBody: sinon.stub(), validationErrors: sinon.stub() };
+      req = { checkBody: sinon.stub(), asyncValidationErrors: sinon.stub().returns(new Promise(resolve => resolve())) };
     });
 
     it('should check the request body against the provided validation rules', (done) => {
       let validationRules = {
-        key: validator.schema.isLength({ options: [{ min: 1 }] }),
-        dateFrom: validator.schema.isDate(),
-        isAdmin: validator.schema.isBoolean(),
-        count: validator.schema.isInt()
+        key: validator.schema.requiredString,
+        dateFrom: validator.schema.requiredDate,
+        isAdmin: validator.schema.requiredBoolean,
+        countRange: validator.schema.requiredIntegerRange
       };
       validator.validate(req, validationRules).then(() => {
         expect(req.checkBody.calledWith(validationRules)).to.equal(true);
-        expect(req.validationErrors.calledOnce).to.equal(true);
+        expect(req.asyncValidationErrors.calledOnce).to.equal(true);
         done();
       });
     });
 
     it('should fail validation according to the provided validation rules', (done) => {
       let errors = [{ param: 'key', msg: 'invalid' }];
-      req.validationErrors.returns(errors);
+      req.asyncValidationErrors.returns(new Promise((resolve, reject) => reject(errors)));
       let validationRules = {
-        key: validator.schema.isLength({ optional: false, options: [{ min: 1 }] }),
-        dateFrom: validator.schema.isDate(),
-        isAdmin: validator.schema.isBoolean(),
-        count: validator.schema.isInt()
+        key: validator.schema.requiredString,
+        dateFrom: validator.schema.optionalDate,
+        isAdmin: validator.schema.optionalBoolean,
+        countRange: validator.schema.optionalIntegerRange
       };
       validator.validate(req, validationRules).catch(reason => {
         expect(reason).to.equal(errors);

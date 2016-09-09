@@ -20,14 +20,27 @@ function findValid(key) {
   return ApiKey.findOne(conditions).exec();
 }
 
-function validate(req) {
-  return new Promise((resolve, reject)=> {
+function notAuthorized(res) {
+  return res.status(401).send();
+}
+
+function validate(options) {
+  let opts = options || {};
+
+  function matchesOptions(doc) {
+    return _.reduce(opts, (result, value, key) => {
+      return result && (_.get(doc, key) === value);
+    }, true);
+  }
+
+  return (req, res, next) => {
     let key = req.get(requestHeaderKey);
-    if (!key) { return reject(); }
+    if (typeof key === 'undefined' || key === null) { return notAuthorized(res); }
     findValid(key).then(doc => {
-      return (doc) ? resolve(doc) : reject();
-    }, reject);
-  });
+      if (doc && matchesOptions(doc)) { return next(); }
+      return notAuthorized(res);
+    }, next);
+  };
 }
 
 function create(doc) {

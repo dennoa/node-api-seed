@@ -12,12 +12,14 @@ describe('api-key save operations', ()=> {
   beforeEach(()=> {
     sinon.stub(apiKey, 'create');
     sinon.stub(apiKey, 'update');
-    sinon.stub(apiKey, 'validate').returns(new Promise(resolve => resolve({ isAdmin: true })));
+    sinon.stub(apiKey, 'get').returns(new Promise((resolve, reject) => reject()));
+    sinon.stub(apiKey, 'validate').returns((req, res, next) => next());
   });
 
   afterEach(()=> {
     apiKey.create.restore();
     apiKey.update.restore();
+    apiKey.get.restore();
     apiKey.validate.restore();
   });
 

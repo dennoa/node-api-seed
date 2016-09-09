@@ -5,8 +5,8 @@ const swaggerProperties = require('./swagger-properties');
 const util = require('../util');
 
 const validationRules = {
-  limit: schema.isInt({ options: [{ min: 1, max: 200 }] }),
-  skip: schema.isInt({ options: [{ min: 0, max: 500 }] })
+  limit: schema.optionalIntegerRange(1, 200),
+  skip: schema.optionalIntegerRange(0, 500)
 };
 
 

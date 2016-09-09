@@ -1,11 +1,11 @@
 'use strict';
 
 const _ = require('lodash');
-const respond = require('../../components/respond');
+const respond = require('../../components/respond')();
 const util = require('../../components/util');
 
 const apiDocs = [
-  require('../api-key/swagger')
+  require('../api-key').swagger
 ];
 
 //See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md

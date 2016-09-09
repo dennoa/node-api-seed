@@ -1,6 +1,6 @@
 'use strict';
 
-const respond = require('../../components/respond');
+const respond = require('../../components/respond-without-id-and-version');
 const apiKey = require('../../components/api-key');
 
 module.exports = (req, res)=> {

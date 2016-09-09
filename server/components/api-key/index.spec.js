@@ -140,35 +140,6 @@ describe('api-key', ()=> {
     });
   });
 
-  it('should treat the non-existence of an api key on the request as invalid', (done)=> {
-    var req = { get: sinon.stub() };
-    apiKey.validate(req).catch(()=> {
-      expect(req.get.calledWith('x-iag-api-key')).to.be.true;
-      done();
-    });
-  });
-
-  it('should treat an unknown api key as invalid', (done)=> {
-    var myKey = 'my key';
-    var req = { get: sinon.stub().returns(myKey) };
-    apiKey.validate(req).catch(()=> {
-      let args = model.findOne.firstCall.args[0];
-      expect(args.key).to.equal(myKey);
-      done();
-    });
-  });
-
-  it('should treat a known api key as valid', (done)=> {
-    var myKey = 'my key';
-    var req = { get: sinon.stub().returns(myKey) };
-    stubs.findExec.returns(new Promise((resolve, reject)=> {
-      resolve({});
-    }));
-    apiKey.validate(req).then(()=> {
-      done();
-    });
-  });
-
   it('should expose the request header used for the api key', () => {
     expect(apiKey.requestHeaderKey).to.equal('x-iag-api-key');
   });
@@ -197,6 +168,68 @@ describe('api-key', ()=> {
       expect(logger.error.calledWith('Failed to create an api key', expectedError)).to.equal(true);
       done();
     });
+  });
+
+  describe('validatation middleware', () => {
+    let req, statusReturn, status, res;
+
+    beforeEach(() => {
+      req = { get: sinon.stub().returns(null) };
+      statusReturn = { send: sinon.stub() };
+      status = sinon.stub().returns(statusReturn);
+      res = { status: status, locals: {} };
+    });
+
+    it('should treat the non-existence of an api key on the request as invalid', (done)=> {
+      statusReturn.send = ()=> {
+        expect(req.get.calledWith(apiKey.requestHeaderKey)).to.be.true;
+        expect(status.calledWith(401)).to.equal(true);
+        done();
+      };
+      apiKey.validate()(req, res);
+    });
+
+    it('should treat an unknown api key as invalid', (done)=> {
+      let myKey = 'my key';
+      req.get.returns(myKey);
+      statusReturn.send = ()=> {
+        let args = model.findOne.firstCall.args[0];
+        expect(args.key).to.equal(myKey);
+        expect(status.calledWith(401)).to.equal(true);
+        done();
+      };
+      apiKey.validate()(req, res);
+    });
+
+    it('should treat a non-admin api key as invalid when an admin key is required', (done)=> {
+      let myKey = 'my key';
+      req.get.returns(myKey);
+      stubs.findExec.returns(new Promise((resolve, reject)=> { resolve({}); }));
+      statusReturn.send = ()=> {
+        expect(status.calledWith(401)).to.equal(true);
+        done();
+      };
+      apiKey.validate({ isAdmin: true })(req, res);
+    });
+
+    it('should treat a known api key as valid', (done)=> {
+      let myKey = 'my key';
+      req.get.returns(myKey);
+      stubs.findExec.returns(new Promise((resolve, reject)=> { resolve({}); }));
+      apiKey.validate()(req, res, () => {
+        done();
+      });
+    });
+
+    it('should treat a known admin api key as valid when an admin key is required', (done)=> {
+      let myKey = 'my key';
+      req.get.returns(myKey);
+      stubs.findExec.returns(new Promise((resolve, reject)=> { resolve({ isAdmin: true }); }));
+      apiKey.validate({ isAdmin: true })(req, res, () => {
+        done();
+      });
+    });
+
   });
 
 });

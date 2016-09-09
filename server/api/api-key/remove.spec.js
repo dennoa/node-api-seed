@@ -11,7 +11,7 @@ describe('api-key remove operation', ()=> {
 
   beforeEach(()=> {
     sinon.stub(apiKey, 'remove');
-    sinon.stub(apiKey, 'validate').returns(new Promise(resolve => resolve({ isAdmin: true })));
+    sinon.stub(apiKey, 'validate').returns((req, res, next) => next());
   });
 
   afterEach(()=> {

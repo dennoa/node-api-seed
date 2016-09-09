@@ -11,7 +11,7 @@ describe('api-key get operation', ()=> {
 
   beforeEach(()=> {
     sinon.stub(apiKey, 'get');
-    sinon.stub(apiKey, 'validate').returns(new Promise(resolve => resolve({ isAdmin: true })));
+    sinon.stub(apiKey, 'validate').returns((req, res, next) => next());
   });
 
   afterEach(()=> {

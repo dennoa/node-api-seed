@@ -4,26 +4,27 @@ const _ = require('lodash');
 const expressValidator = require('express-validator');
 const util = require('../util');
 
-function errorInvalid(key) {
-  return options => {
-    let result = (options && (options.optional === false)) ? {} : { optional: true };
-    result[key] = _.merge({ errorMessage: 'invalid' }, _.omit(options, 'optional'));
-    return result;
-  };
-}
+const errorMessages = {
+  invalid: 'invalid',
+  required: 'required',
+  unavailable: 'unavailable'
+};
 
 const schema = {
-  isDate: errorInvalid('isDate'),
-  isBoolean: errorInvalid('isBoolean'),
-  isInt: errorInvalid('isInt'),
-  isLength: errorInvalid('isLength')
+  optionalDate: { optional: true, isDate: { errorMessage: errorMessages.invalid }},
+  requiredDate: { isDate: { errorMessage: errorMessages.invalid }},
+  requiredString: { isLength: { options: [{ min: 1 }], errorMessage: errorMessages.required }},
+  optionalBoolean: { optional: true, isBoolean: { errorMessage: errorMessages.invalid }},
+  requiredBoolean: { isBoolean: { errorMessage: errorMessages.invalid }},
+  optionalIntegerRange: (min, max) => { return { optional: true, isInt: { options: [{ min: min, max: max }], errorMessage: errorMessages.invalid }}; },
+  requiredIntegerRange: (min, max) => { return { isInt: { options: [{ min: min, max: max }], errorMessage: errorMessages.invalid }}; }
 };
 
 function isValidPositiveIntegerRange(range) {
   return !!range && util.isPositiveInteger(range.min) && util.isPositiveInteger(range.max) && parseInt(range.min) <= parseInt(range.max);
 }
 
-function middleware(options) {
+function prepare(options) {
   return expressValidator(_.merge({
     customValidators: {
       isValidPositiveIntegerRange: isValidPositiveIntegerRange
@@ -34,14 +35,13 @@ function middleware(options) {
 function validate(req, validationRules) {
   return new Promise((resolve, reject)=> {
     req.checkBody(validationRules); //Only supports checkBody as check does not seem to function as expected
-    let errors = req.validationErrors();
-    if (errors) { return reject(errors); }
-    resolve();
+    req.asyncValidationErrors().then(resolve, reject);
   });
 }
 
 module.exports = {
-  middleware: middleware,
+  errorMessages: errorMessages,
+  prepare: prepare,
   schema: schema,
   validate: validate
 };
