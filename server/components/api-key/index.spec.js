@@ -2,7 +2,6 @@
 
 const apiKey = require('./index');
 const model = require('./api-key.model');
-const logger = require('../logger');
 const expect = require('chai').expect;
 const sinon = require('sinon');
 
@@ -19,14 +18,12 @@ describe('api-key', ()=> {
     sinon.stub(model, 'create').returns(new Promise(resolve => resolve(null)));
     sinon.stub(model, 'findOne').returns({ exec: stubs.findExec });
     sinon.stub(model, 'find').returns(stubs.findResponse);
-    sinon.stub(logger, 'error');
   });
 
   afterEach(()=> {
     model.create.restore();
     model.findOne.restore();
     model.find.restore();
-    logger.error.restore();
   });
 
   it('should create a new ApiKey', (done)=> {
@@ -162,10 +159,10 @@ describe('api-key', ()=> {
     });
   });
 
-  it('should log any error encountered when creating a default admin api key', (done)=> {
+  it('should respond with any error encountered when creating a default admin api key', (done)=> {
     model.create.returns(new Promise((resolve, reject) => reject(expectedError)));
-    apiKey.ensureAnAdminApiKeyIsAvailable().then(()=> {
-      expect(logger.error.calledWith('Failed to create an api key', expectedError)).to.equal(true);
+    apiKey.ensureAnAdminApiKeyIsAvailable().catch(err => {
+      expect(err).to.equal(expectedError);
       done();
     });
   });

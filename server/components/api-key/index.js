@@ -3,7 +3,6 @@
 const uuid = require('uuid');
 const _ = require('lodash');
 const ApiKey = require('./api-key.model');
-const logger = require('../logger');
 const requestHeaderKey = 'x-iag-api-key'; 
 
 function findValid(key) {
@@ -82,14 +81,13 @@ function find(conditions) {
   return ApiKey.find(conditions);
 }
 
-function logKeyCreationError(err) {
-  logger.error('Failed to create an api key', err);
-}
-
 function ensureAnAdminApiKeyIsAvailable() {
-  return ApiKey.findOne({ isAdmin: true }).exec().then(doc => {
-    if (!doc) { create({ isAdmin: true }).catch(logKeyCreationError); }
-  }, logKeyCreationError);
+  return new Promise((resolve, reject) => {
+    ApiKey.findOne({ isAdmin: true }).exec().then(doc => {
+      if (doc) { return resolve(doc); }
+      create({ isAdmin: true }).then(resolve, reject); 
+    }, reject);
+  });
 }
 
 module.exports = {
