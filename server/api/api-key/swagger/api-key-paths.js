@@ -40,7 +40,7 @@ const get = {
 
 module.exports = {
   "tags": [
-    { "name": "api-key-admin", "description": "API Key Administration" }
+    { "name": "api-key-admin", "description": "api key administration" }
   ],
   "paths": {
     "/api-key": {

@@ -5,7 +5,8 @@ const respond = require('../../components/respond')();
 const util = require('../../components/util');
 
 const apiDocs = [
-  require('../api-key').swagger
+  require('../api-key').swagger,
+  require('../auth').swagger
 ];
 
 //See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
@@ -25,13 +26,15 @@ const swagger = _.mergeWith({
 
 function merge(res) {
   return new Promise((resolve, reject) => {
-    let merged = Object.assign({}, swagger);
+    let merged = {};
     let other = apiDocs.map(doc => ((typeof doc === 'function') ? doc(res) : doc));
     let promises = [];
     other.forEach(doc => (doc instanceof Promise) ? promises.push(doc) : _.mergeWith(merged, doc, util.concatArrays));
     Promise.all(promises)
-      .then(docs => resolve(docs.reduce((all, doc) => _.mergeWith(all, doc, util.concatArrays), merged)))
-      .catch(reject);
+      .then(docs => {
+        let otherDocs = docs.reduce((all, doc) => _.mergeWith(all, doc, util.concatArrays), merged);
+        resolve(_.mergeWith(otherDocs, swagger, util.concatArrays));
+      }).catch(reject);
   });
 }
 

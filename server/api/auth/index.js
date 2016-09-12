@@ -8,11 +8,14 @@ module.exports = require('stateless-auth')({
     secret: config.auth.jwt.secret 
   },
   providers: {
-    github: { 
-      clientSecret: 'CLIENT_SECRET'
-    },
     login: {
       findUser: (credentials => user.get(credentials.username))
+    }
+  },
+  swagger: {
+    pathPrefix: '/auth',
+    docs: {
+      basePath: '/'
     }
   }
 });
