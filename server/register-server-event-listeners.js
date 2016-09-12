@@ -8,7 +8,7 @@ const logger = require('./components/logger');
 module.exports = () => {
   serverEvents.onStartup(() => {
     logger.info('Listening on port %s', config.port);
-    apiKey.ensureAnAdminApiKeyIsAvailable().catch(err => {
+    apiKey.ensureAnApiKeyIsAvailable({ isAdmin: true }).catch(err => {
       logger.error('Failed to create an admin api key', err);
     });
   });

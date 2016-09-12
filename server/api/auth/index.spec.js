@@ -9,11 +9,11 @@ const auth = require('./index');
 describe('authentication support', ()=> {
 
   beforeEach(() => {
-    sinon.stub(user, 'findByUsername');
+    sinon.stub(user, 'get').returns(new Promise((resolve, reject) => reject()));
   });
 
   afterEach(() => {
-    user.findByUsername.restore();
+    user.get.restore();
   });
 
   function verifyUserInfo(sanitized, raw) {
@@ -24,7 +24,7 @@ describe('authentication support', ()=> {
   it('should authenticate with the local login function', done => {
     let credentials = { username: 'barry', password: 'secret' };
     let userInfo = { username: credentials.username, passwordHash: auth.options.providers.login.hashPassword(credentials.password), email: 'barry@hoime.com' };
-    user.findByUsername.yields(null, userInfo);
+    user.get.returns(new Promise(resolve => resolve(userInfo)));
     specHelper.request('post', '/auth/login').send(credentials).end((err, res) => {
       expect(res.statusCode).to.equal(200);
       verifyUserInfo(res.body.user_info, userInfo);
@@ -36,7 +36,7 @@ describe('authentication support', ()=> {
   it('should return unauthorized when the password does not match', done => {
     let credentials = { username: 'barry', password: 'secret' };
     let userInfo = { username: credentials.username, passwordHash: 'incorrect', email: 'barry@hoime.com' };
-    user.findByUsername.yields(null, userInfo);
+    user.get.returns(new Promise(resolve => resolve(userInfo)));
     specHelper.request('post', '/auth/login').send(credentials).end((err, res) => {
       expect(res.statusCode).to.equal(401);
       done();

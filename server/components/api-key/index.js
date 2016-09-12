@@ -3,7 +3,14 @@
 const uuid = require('uuid');
 const _ = require('lodash');
 const ApiKey = require('./api-key.model');
-const requestHeaderKey = 'x-iag-api-key'; 
+
+const crud = require('../crud')({
+  model: ApiKey,
+  keyConditions: (doc => { return { key: doc.key }; }),
+  defaultValues: () => { return { key: uuid.v4() }; }
+});
+
+const requestHeaderKey = 'x-iag-api-key';
 
 function findValid(key) {
   let now = new Date();
@@ -42,61 +49,17 @@ function validate(options) {
   };
 }
 
-function create(doc) {
-  return ApiKey.create(_.merge({ key: uuid.v4() }, doc));
-}
-
-function get(key) {
+function ensureAnApiKeyIsAvailable(conditions) {
   return new Promise((resolve, reject) => {
-    ApiKey.findOne({ key: key }).exec().then(existing => {
-      if (!existing) { return reject(); }
-      resolve(existing);
-    }, reject);
-  });
-}
-
-function update(doc) {
-  return new Promise((resolve, reject) => {
-    get(doc.key).then(existing => {
-      _.merge(existing, doc).save(err => {
-        if (err) { return reject(err); }
-        resolve(existing);
-      });
-    }, reject);
-  });
-}
-
-function remove(key) {
-  return new Promise((resolve, reject) => {
-    get(key).then(existing => {
-      existing.remove(err => {
-        if (err) { return reject(err); }
-        resolve();
-      });
-    }, reject);
-  });
-}
-
-function find(conditions) {
-  return ApiKey.find(conditions);
-}
-
-function ensureAnAdminApiKeyIsAvailable() {
-  return new Promise((resolve, reject) => {
-    ApiKey.findOne({ isAdmin: true }).exec().then(doc => {
+    ApiKey.findOne(conditions).exec().then(doc => {
       if (doc) { return resolve(doc); }
-      create({ isAdmin: true }).then(resolve, reject); 
+      crud.create(conditions).then(resolve, reject); 
     }, reject);
   });
 }
 
-module.exports = {
+module.exports = _.merge({
   validate: validate,
-  create: create,
-  update: update,
-  get: get,
-  remove: remove,
-  find: find,
   requestHeaderKey: requestHeaderKey,
-  ensureAnAdminApiKeyIsAvailable: ensureAnAdminApiKeyIsAvailable
-};
+  ensureAnApiKeyIsAvailable: ensureAnApiKeyIsAvailable
+}, crud);

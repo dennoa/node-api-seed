@@ -9,7 +9,7 @@ module.exports = require('stateless-auth')({
   },
   providers: {
     login: {
-      findUser: (credentials => user.get(credentials.username))
+      findUser: (credentials => user.get({ username: credentials.username }))
     }
   },
   swagger: {

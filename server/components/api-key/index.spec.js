@@ -141,27 +141,28 @@ describe('api-key', ()=> {
     expect(apiKey.requestHeaderKey).to.equal('x-iag-api-key');
   });
 
-  it('should ensure an admin api key is available', (done)=> {
-    apiKey.ensureAnAdminApiKeyIsAvailable().then(()=> {
-      expect(model.findOne.firstCall.args[0].isAdmin).to.equal(true);
-      expect(model.create).to.have.been.called;
+  it('should ensure a matching api key is available', (done)=> {
+    let conditions = { isAdmin: true };
+    apiKey.ensureAnApiKeyIsAvailable(conditions).then(()=> {
+      expect(model.findOne.calledWith(conditions)).to.equal(true);
+      expect(model.create.firstCall.args[0].isAdmin).to.equal(true);
       done();
     });
   });
 
-  it('should not create an admin api key if one is already available', (done)=> {
+  it('should not create an api key if one is already available', (done)=> {
     stubs.findExec.returns(new Promise((resolve)=> {
       resolve({});
     }));
-    apiKey.ensureAnAdminApiKeyIsAvailable().then(()=> {
+    apiKey.ensureAnApiKeyIsAvailable({ isAdmin: true }).then(()=> {
       expect(model.create.called).to.be.false;
       done();
     });
   });
 
-  it('should respond with any error encountered when creating a default admin api key', (done)=> {
+  it('should respond with any error encountered when creating a default api key', (done)=> {
     model.create.returns(new Promise((resolve, reject) => reject(expectedError)));
-    apiKey.ensureAnAdminApiKeyIsAvailable().catch(err => {
+    apiKey.ensureAnApiKeyIsAvailable({ isAdmin: true }).catch(err => {
       expect(err).to.equal(expectedError);
       done();
     });

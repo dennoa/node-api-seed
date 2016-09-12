@@ -4,7 +4,7 @@ const _ = require('lodash');
 const respond = require('../../components/respond');
 
 function removeIdAndVersionFromObj(obj) {
-  let o = obj.toObject ? obj.toObject(): obj;
+  let o = (obj && obj.toObject) ? obj.toObject(): obj;
   return _.omit(o, ['_id', '__v']);
 }
 

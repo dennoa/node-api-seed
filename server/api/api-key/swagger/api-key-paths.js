@@ -51,7 +51,7 @@ module.exports = {
         "responses": errorResponses()
       })
     },
-    "/api-key/search": {
+    "/api-key/find": {
       "post": {
         "tags": ["api-key-admin"],
         "summary": "Search for an api key",

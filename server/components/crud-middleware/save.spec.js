@@ -2,10 +2,9 @@
 
 const expect = require('chai').expect;
 const sinon = require('sinon');
-const apiKey = require('../../components/api-key');
-const specHelper = require('../spec-helper');
+const specHelper = require('./spec-helper');
 
-describe('api-key save operations', ()=> {
+xdescribe('api-key save operations', ()=> {
 
   let expectedError = 'Expected for testing';
 
