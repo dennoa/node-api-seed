@@ -3,12 +3,7 @@
 const _ = require('lodash');
 const respond = require('promise-to-respond')();
 const util = require('../../components/util');
-
-const apiDocs = [
-  require('../api-key').swagger,
-  require('../auth').swagger,
-  require('../user').swagger
-];
+const apiDocsToInclude = require('./api-docs-to-include');
 
 //See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md
 const swagger = _.mergeWith({
@@ -25,10 +20,10 @@ const swagger = _.mergeWith({
   ]
 }, require('./security'), require('./error-definitions'), require('./integer-range'), util.concatArrays);
 
-function merge(res) {
+function merge(req, res) {
   return new Promise((resolve, reject) => {
     let merged = {};
-    let other = apiDocs.map(doc => ((typeof doc === 'function') ? doc(res) : doc));
+    let other = apiDocsToInclude.map(doc => ((typeof doc === 'function') ? doc(req, res) : doc));
     let promises = [];
     other.forEach(doc => (doc instanceof Promise) ? promises.push(doc) : _.mergeWith(merged, doc, util.concatArrays));
     Promise.all(promises)
@@ -40,10 +35,10 @@ function merge(res) {
 }
 
 function routes(req, res) {
-  respond(res, merge(res));
+  respond(res, merge(req, res));
 }
 
 module.exports = {
   routes: routes,
-  apiDocs: apiDocs
+  apiDocsToInclude: apiDocsToInclude
 };
