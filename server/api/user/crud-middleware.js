@@ -1,15 +1,13 @@
 'use strict';
 
 const _ = require('lodash');
+const respond = require('promise-to-respond');
 const user = require('../../components/user');
-const respondOmit = require('../../components/respond-omit');
 const searchConditions = require('../../components/search-conditions');
 const searchControls = require('../../components/search-controls');
 const requestValidator = require('./request-validator');
 
 const conditions = searchConditions({ username: 'like', email: 'like', name: 'like', isAdmin: 'exact' });
-
-const respond = respondOmit(['_id', '__v', 'passwordHash']);
 
 module.exports = require('cruddy-express-api').middleware({
   getCrudModel: () => user,
@@ -25,5 +23,5 @@ module.exports = require('cruddy-express-api').middleware({
     getConditions: conditions.get
   },
   validateRequest: requestValidator.validate,
-  respond: respond
+  respond: respond({ fieldsToOmit: ['_id', '__v', 'passwordHash'] })
 });
