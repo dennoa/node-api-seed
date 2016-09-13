@@ -11,7 +11,7 @@ const create = {
     "name": "user",
     "in": "body",
     "schema": {
-      "$ref": "#/definitions/user-createable"
+      "$ref": "#/definitions/user-updateable"
     }
   }],
   "responses": _.merge(errorResponses({ exclude: '404' }), {
@@ -48,11 +48,6 @@ module.exports = {
       "put": _.merge({}, create, {
         "summary": "Update a user",
         "description": "Update a user",
-        "parameters": [{
-          "schema": {
-            "$ref": "#/definitions/user-updateable"
-          }
-        }],
         "responses": errorResponses()
       })
     },

@@ -1,6 +1,6 @@
 'use strict';
 
-const apiKey = require('../components/api-key');
+// const apiKey = require('../components/api-key');
 const auth = require('./auth');
 
 module.exports = (app)=> {

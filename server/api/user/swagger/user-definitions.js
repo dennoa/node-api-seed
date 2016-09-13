@@ -3,7 +3,7 @@
 const _ = require('lodash');
 const searchControls = require('../../../components/search-controls');
 
-const userUpdateable = {
+const userCommon = {
   "type": "object",
   "description": "User",
   "properties": {
@@ -30,7 +30,7 @@ const userUpdateable = {
   }
 };
 
-const user = _.merge({}, userUpdateable, {
+const user = _.merge({}, userCommon, {
   "properties": {
     "since": {
       "type": "string",
@@ -40,7 +40,7 @@ const user = _.merge({}, userUpdateable, {
   }
 });
 
-const userCreatable = _.merge({}, userUpdateable, {
+const userUpdateable = _.merge({}, userCommon, {
   "properties": {
     "password": {
       "type": "string",
@@ -53,7 +53,6 @@ module.exports = {
   "definitions": {
     "user": user,
     "user-updateable": userUpdateable,
-    "user-createable": userCreatable,
     "user-search-conditions": _.merge({}, user, {
       "description": "Search for users",
       "properties": _.merge({

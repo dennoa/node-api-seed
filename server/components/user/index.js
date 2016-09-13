@@ -22,11 +22,12 @@ const crudModel = crud.model({
   })
 });
 
-function createWithPassword(doc) {
-  return crudModel.create(_.merge({ passwordHash: hashPassword(doc.password) }, doc));
+function saveWithPassword(createOrUpdate, doc) {
+  return crudModel[createOrUpdate](_.merge({ passwordHash: hashPassword(doc.password) }, doc));
 }
 
 module.exports = _.merge({}, crudModel, {
   setHashPassword: setHashPassword,
-  create: createWithPassword
+  create: doc => saveWithPassword('create', doc),
+  update: doc => saveWithPassword('update', doc)
 });
