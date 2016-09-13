@@ -2,9 +2,16 @@
 
 const uuid = require('uuid');
 const _ = require('lodash');
+const crud = require('cruddy-express-api');
 const ApiKey = require('./api-key.model');
 
 const requestHeaderKey = 'x-iag-api-key';
+
+const crudModel = crud.model({
+  model: ApiKey,
+  getKeyConditions: (doc => { return { key: doc.key }; }),
+  getDefaultValues: () => { return { key: uuid.v4() }; }
+});
 
 function findValid(key) {
   let now = new Date();
@@ -47,19 +54,13 @@ function ensureAnApiKeyIsAvailable(conditions) {
   return new Promise((resolve, reject) => {
     ApiKey.findOne(conditions).exec().then(doc => {
       if (doc) { return resolve(doc); }
-      crud.create(conditions).then(resolve, reject); 
+      crudModel.create(conditions).then(resolve, reject); 
     }, reject);
   });
 }
-
-const crud = require('../crud')({
-  model: ApiKey,
-  getKeyConditions: (doc => { return { key: doc.key }; }),
-  getDefaultValues: () => { return { key: uuid.v4() }; }
-});
 
 module.exports = _.merge({
   validate: validate,
   requestHeaderKey: requestHeaderKey,
   ensureAnApiKeyIsAvailable: ensureAnApiKeyIsAvailable
-}, crud);
+}, crudModel);

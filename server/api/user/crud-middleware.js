@@ -11,8 +11,8 @@ const conditions = searchConditions({ username: 'like', email: 'like', name: 'li
 
 const respond = respondOmit(['_id', '__v', 'passwordHash']);
 
-module.exports = require('../../components/crud-middleware')({
-  getCrud: () => user,
+module.exports = require('cruddy-express-api').middleware({
+  getCrudModel: () => user,
   create: {
     rules: requestValidator.createRules
   },

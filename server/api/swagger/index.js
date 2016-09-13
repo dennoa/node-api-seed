@@ -1,7 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
-const respond = require('../../components/respond')();
+const respond = require('promise-to-respond')();
 const util = require('../../components/util');
 
 const apiDocs = [

@@ -8,8 +8,8 @@ const respond = require('../../components/respond-omit')();
 
 const conditions = searchConditions({ key: 'like', dateFrom: 'gte', dateTo: 'lte', isAdmin: 'exact' });
 
-module.exports = require('../../components/crud-middleware')({
-  getCrud: () => apiKey,
+module.exports = require('cruddy-express-api').middleware({
+  getCrudModel: () => apiKey,
   create: {
     rules: requestValidator.createRules
   },

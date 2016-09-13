@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+const crud = require('cruddy-express-api');
 const User = require('./user.model');
 
 let hashPassword;
@@ -14,7 +15,7 @@ function idConditions(doc) {
   }, {});
 }
 
-const crud = require('../crud')({
+const crudModel = crud.model({
   model: User,
   getKeyConditions: (doc => { 
     return (doc.username) ? { username: doc.username } : idConditions(doc);
@@ -22,10 +23,10 @@ const crud = require('../crud')({
 });
 
 function createWithPassword(doc) {
-  return crud.create(_.merge({ passwordHash: hashPassword(doc.password) }, doc));
+  return crudModel.create(_.merge({ passwordHash: hashPassword(doc.password) }, doc));
 }
 
-module.exports = _.merge({}, crud, {
+module.exports = _.merge({}, crudModel, {
   setHashPassword: setHashPassword,
   create: createWithPassword
 });
