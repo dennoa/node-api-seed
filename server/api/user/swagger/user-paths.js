@@ -4,34 +4,34 @@ const _ = require('lodash');
 const errorResponses = require('../../swagger/error-responses');
 
 const create = {
-  "tags": ["api-key-admin"],
-  "summary": "Create an api key",
-  "description": "Create an api key",
+  "tags": ["user-admin"],
+  "summary": "Create a user",
+  "description": "Create a user",
   "parameters": [{
-    "name": "apiKey",
+    "name": "user",
     "in": "body",
     "schema": {
-      "$ref": "#/definitions/api-key"
+      "$ref": "#/definitions/user-createable"
     }
   }],
   "responses": _.merge(errorResponses({ exclude: '404' }), {
     "200": {
-      "description": "Api Key",
+      "description": "User",
       "schema": {
-        "$ref": "#/definitions/api-key"
+        "$ref": "#/definitions/user"
       }
     }
   })
 };
 
 const get = {
-  "tags": ["api-key-admin"],
-  "summary": "Get an api key",
-  "description": "Get an api key",
+  "tags": ["user-admin"],
+  "summary": "Get a user by username",
+  "description": "Get a user by username",
   "parameters": [{
-    "name": "key",
+    "name": "username",
     "in": "path",
-    "description": "The api key value",
+    "description": "The username",
     "required": true,
     "type": "string"
   }],
@@ -40,56 +40,61 @@ const get = {
 
 module.exports = {
   "tags": [
-    { "name": "api-key-admin", "description": "api key administration" }
+    { "name": "user-admin", "description": "user administration" }
   ],
   "paths": {
-    "/api-key": {
+    "/user": {
       "post": create,
       "put": _.merge({}, create, {
-        "summary": "Update an api key",
-        "description": "Update an api key",
+        "summary": "Update a user",
+        "description": "Update a user",
+        "parameters": [{
+          "schema": {
+            "$ref": "#/definitions/user-updateable"
+          }
+        }],
         "responses": errorResponses()
       })
     },
-    "/api-key/find": {
+    "/user/find": {
       "post": {
-        "tags": ["api-key-admin"],
-        "summary": "Search for a api keys",
-        "description": "Search for a api keys",
+        "tags": ["user-admin"],
+        "summary": "Search for users",
+        "description": "Search for users",
         "parameters": [{
           "name": "conditions",
           "in": "body",
           "schema": {
-            "$ref": "#/definitions/api-key-search-conditions"
+            "$ref": "#/definitions/user-search-conditions"
           }
         }],
         "responses": _.merge(errorResponses({ exclude: '404' }), {
           "200": {
-            "description": "List of API keys",
+            "description": "List of users",
             "schema": {
               "type": "array",
               "items": {
-                "$ref": "#/definitions/api-key"
+                "$ref": "#/definitions/user"
               }
             }
           }
         })
       }
     },
-    "/api-key/{key}": {
+    "/user/{username}": {
       "get": _.merge({}, get, {
         "responses": {
           "200": {
-            "description": "Api Key",
+            "description": "User",
             "schema": {
-              "$ref": "#/definitions/api-key"
+              "$ref": "#/definitions/user"
             }
           }
         }
       }),
       "delete": _.merge({}, get, {
-        "summary": "Delete an api key",
-        "description": "Delete an api key",
+        "summary": "Delete a user",
+        "description": "Delete a user",
         "responses": {
           "204": {
             "description": "Success"

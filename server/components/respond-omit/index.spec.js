@@ -4,18 +4,19 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 const respond = require('./index');
 
-describe('respond-without-id-and-version', () => {
+describe('respond-omit', () => {
 
-  let res, resStatus, resJson;
+  let res, resStatus, resJson, instance;
 
   beforeEach(()=> {
     resJson = sinon.stub();
     resStatus = sinon.stub().returns({ json: resJson });
     res = { status: resStatus };
+    instance = respond();
   });
 
   it('should remove _id and __v from objects', done => {
-    respond(res, new Promise(resolve => resolve({ _id: '324', __v: 0, ok: 'ok' }))).then(()=> {
+    instance(res, new Promise(resolve => resolve({ _id: '324', __v: 0, ok: 'ok' }))).then(()=> {
       let json = resJson.firstCall.args[0];
       expect(typeof json._id).to.equal('undefined');
       expect(typeof json.__v).to.equal('undefined');
@@ -27,7 +28,7 @@ describe('respond-without-id-and-version', () => {
   it('should convert mongoose objects to plain objects in order to remove the _id and __v fields', done => {
     let obj = { _id: '324', __v: 0, ok: 'ok' };
     obj.toObject = sinon.stub().returns(obj);
-    respond(res, new Promise(resolve => resolve(obj))).then(()=> {
+    instance(res, new Promise(resolve => resolve(obj))).then(()=> {
       let json = resJson.firstCall.args[0];
       expect(typeof json._id).to.equal('undefined');
       expect(typeof json.__v).to.equal('undefined');
@@ -37,7 +38,7 @@ describe('respond-without-id-and-version', () => {
   });
 
   it('should remove _id and __v from arrays of objects', done => {
-    respond(res, new Promise(resolve => resolve([{ _id: '324', __v: 5, ok: 'ok' },{ _id: '324' },{ __v: 2 }]))).then(()=> {
+    instance(res, new Promise(resolve => resolve([{ _id: '324', __v: 5, ok: 'ok' },{ _id: '324' },{ __v: 2 }]))).then(()=> {
       let json = resJson.firstCall.args[0];
       expect(json.filter(obj => (obj._id || obj.__v)).length).to.equal(0);
       done();

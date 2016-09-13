@@ -1,15 +1,18 @@
 'use strict';
 
-const apiKey = require('../../components/api-key');
+const _ = require('lodash');
+const user = require('../../components/user');
+const respondOmit = require('../../components/respond-omit');
 const searchConditions = require('../../components/search-conditions');
 const searchControls = require('../../components/search-controls');
 const requestValidator = require('./request-validator');
-const respond = require('../../components/respond-omit')();
 
-const conditions = searchConditions({ key: 'like', dateFrom: 'gte', dateTo: 'lte', isAdmin: 'exact' });
+const conditions = searchConditions({ username: 'like', email: 'like', name: 'like', isAdmin: 'exact' });
+
+const respond = respondOmit(['_id', '__v', 'passwordHash']);
 
 module.exports = require('../../components/crud-middleware')({
-  getCrud: () => apiKey,
+  getCrud: () => user,
   create: {
     rules: requestValidator.createRules
   },

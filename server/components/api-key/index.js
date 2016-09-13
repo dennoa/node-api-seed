@@ -4,12 +4,6 @@ const uuid = require('uuid');
 const _ = require('lodash');
 const ApiKey = require('./api-key.model');
 
-const crud = require('../crud')({
-  model: ApiKey,
-  keyConditions: (doc => { return { key: doc.key }; }),
-  defaultValues: () => { return { key: uuid.v4() }; }
-});
-
 const requestHeaderKey = 'x-iag-api-key';
 
 function findValid(key) {
@@ -57,6 +51,12 @@ function ensureAnApiKeyIsAvailable(conditions) {
     }, reject);
   });
 }
+
+const crud = require('../crud')({
+  model: ApiKey,
+  getKeyConditions: (doc => { return { key: doc.key }; }),
+  getDefaultValues: () => { return { key: uuid.v4() }; }
+});
 
 module.exports = _.merge({
   validate: validate,

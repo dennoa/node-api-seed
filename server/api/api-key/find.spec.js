@@ -2,9 +2,10 @@
 
 const expect = require('chai').expect;
 const sinon = require('sinon');
-const specHelper = require('./spec-helper');
+const apiKey = require('../../components/api-key');
+const specHelper = require('../supertest-spec-helper');
 
-xdescribe('api-key search operation', ()=> {
+describe('api-key find operation', ()=> {
 
   let expectedError = 'Expected for testing';
   let skip, limit, exec;
@@ -14,12 +15,10 @@ xdescribe('api-key search operation', ()=> {
     limit = sinon.stub().returns({ exec: exec });
     skip = sinon.stub().returns({ limit: limit });
     sinon.stub(apiKey, 'find').returns({ skip: skip });
-    sinon.stub(apiKey, 'validate').returns((req, res, next) => next());
   });
 
   afterEach(()=> {
     apiKey.find.restore();
-    apiKey.validate.restore();
   });
 
   let validSearchConditions = [
@@ -47,7 +46,7 @@ xdescribe('api-key search operation', ()=> {
     it('should find api keys when searching ' + condition.description, (done) => {
       let docs = [{ key: '234', dateFrom: '2016-09-06T07:25:10.759Z' }, { key: 'abc', dateFrom: '2016-10-06T07:25:10.759Z' }];
       exec.returns(new Promise(resolve => resolve(docs)));
-      specHelper.request('post', '/api-key/search').send(condition.params).end((err, res) => {
+      specHelper.request('post', '/api-key/find').send(condition.params).end((err, res) => {
         expect(res.statusCode).to.equal(200);
         expect(res.body).to.deep.equal(docs);
         done();
@@ -57,7 +56,7 @@ xdescribe('api-key search operation', ()=> {
 
   invalidSearchConditions.forEach(condition => {
     it('should respond with validation errors when searching ' + condition.description, (done) => {
-      specHelper.request('post', '/api-key/search').send(condition.params).end((err, res) => {
+      specHelper.request('post', '/api-key/find').send(condition.params).end((err, res) => {
         expect(res.statusCode).to.equal(400);
         condition.verifyError(res.body);
         done();
@@ -67,7 +66,7 @@ xdescribe('api-key search operation', ()=> {
 
   it('should respond with any unexpected error encountered when searching', (done) => {
     exec.returns(new Promise((resolve, reject) => reject(expectedError)));
-    specHelper.request('post', '/api-key/search').send().end((err, res) => {
+    specHelper.request('post', '/api-key/find').send().end((err, res) => {
       expect(res.statusCode).to.equal(500);
       expect(res.body.error).to.equal(expectedError);
       done();

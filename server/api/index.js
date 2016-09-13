@@ -9,4 +9,5 @@ module.exports = (app)=> {
   app.use('/api-key', require('./api-key').routes);
   app.use('/auth', auth.routes);
   app.use('/swagger', require('./swagger').routes);
+  app.use('/user', require('./user').routes);
 };

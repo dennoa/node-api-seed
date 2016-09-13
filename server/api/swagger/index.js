@@ -6,7 +6,8 @@ const util = require('../../components/util');
 
 const apiDocs = [
   require('../api-key').swagger,
-  require('../auth').swagger
+  require('../auth').swagger,
+  require('../user').swagger
 ];
 
 //See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md

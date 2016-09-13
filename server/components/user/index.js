@@ -3,16 +3,29 @@
 const _ = require('lodash');
 const User = require('./user.model');
 
+let hashPassword;
+function setHashPassword(fn) {
+  hashPassword = fn;
+}
+
 function idConditions(doc) {
-  return _.reduce(doc.ids, (conditions, value, key) => {
+  return _.transform(doc.ids, (conditions, value, key) => {
     conditions['ids.' + key] = value;
   }, {});
 }
 
-module.exports = require('../crud')({
+const crud = require('../crud')({
   model: User,
-  keyConditions: (doc => { 
+  getKeyConditions: (doc => { 
     return (doc.username) ? { username: doc.username } : idConditions(doc);
-  }),
-  defaultValues: () => null
+  })
+});
+
+function createWithPassword(doc) {
+  return crud.create(_.merge({ passwordHash: hashPassword(doc.password) }, doc));
+}
+
+module.exports = _.merge({}, crud, {
+  setHashPassword: setHashPassword,
+  create: createWithPassword
 });

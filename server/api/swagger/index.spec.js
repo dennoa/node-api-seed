@@ -1,7 +1,7 @@
 'use strict';
 
 const expect = require('chai').expect;
-const specHelper = require('../spec-helper');
+const specHelper = require('../supertest-spec-helper');
 const apiKey = require('../../components/api-key');
 const swagger = require('./index');
 

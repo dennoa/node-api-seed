@@ -1,12 +1,8 @@
 'use strict';
 
-const respond = require('../respond-without-id-and-version');
-const requestValidator = require('../request-validator');
-const searchControls = require('../search-controls');
-
 module.exports = {
-  respond: respond,
-  requestValidator: requestValidator,
+  respond: (res, promise) => res.status(500).send('Please provide a crud response handler'),
+  validateRequest: (req, validationRules) => new Promise(resolve => resolve()),
   create: {
     rules: {}
   },
@@ -14,8 +10,13 @@ module.exports = {
     rules: {}
   },
   find: {
-    rules: searchControls.validationRules,
-    getControls: searchControls.get,
+    rules: {},
+    getControls: () => {
+      return {
+        skip: 0,
+        limit: 20
+      };
+    },
     getConditions: () => null
   }
 };

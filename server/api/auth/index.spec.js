@@ -2,7 +2,7 @@
 
 const sinon = require('sinon');
 const expect = require('chai').expect;
-const specHelper = require('../spec-helper');
+const specHelper = require('../supertest-spec-helper');
 const user = require('../../components/user');
 const auth = require('./index');
 

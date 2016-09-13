@@ -17,8 +17,8 @@ describe('crud', ()=> {
         findOne: sinon.stub().returns({ exec: findExec }),
         find: sinon.stub().returns({ exec: findExec })
       },
-      defaultValues: () => null,
-      keyConditions: (doc => { return { key: doc.key }; })
+      getDefaultValues: () => null,
+      getKeyConditions: (doc => { return { key: doc.key }; })
     };
     crudInstance = crud(options);
   });
@@ -39,13 +39,14 @@ describe('crud', ()=> {
 
   it('should allow default values to be specified when creating a new model', (done)=> {
     let dateFrom = new Date();
-    options.defaultValues = () => {
+    options.getDefaultValues = () => {
       return {
         dateFrom: dateFrom,
         accessCount: 0
       };
     };
     let doc = { key: 'some key' };
+    crudInstance = crud(options);
     crudInstance.create(doc).then(()=> {
       let args = options.model.create.firstCall.args[0];
       expect(args.key).to.equal(doc.key);
